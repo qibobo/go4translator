@@ -1,4 +1,4 @@
-module github.com/qibobo/go4translator
+module github.ibm.com/qiyangbj/go4translator
 
 go 1.13
 
