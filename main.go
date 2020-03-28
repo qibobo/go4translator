@@ -18,14 +18,14 @@ type Status struct {
 	SecretName Secret `json:"secretName"`
 }
 type Credential struct {
-	BackendServiceIdentifier string `json:"backendServiceIdentifier"`
+	BackendServiceIdentifier string `json:"id"`
 	Status                   Status `json:"status"`
 }
 type Handler struct {
 	service *languagetranslatorv3.LanguageTranslatorV3
 }
 
-func GetCredential(name string) *Credential {
+func GetVCAPSERVICES(name string) *Credential {
 	vcapStr := os.Getenv("VCAP_SERVICES")
 	if vcapStr == "" {
 		vcapStr = jsonStr
@@ -90,6 +90,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
 	// vcapStr := os.Getenv("VCAP_SERVICES")
 	// if vcapStr == "" {
 	// 	vcapStr = jsonStr
