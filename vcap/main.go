@@ -21,16 +21,24 @@ type Service struct {
 }
 
 func GetCredentialFromVcapServicesByName(name string) *Credential {
+	serviceClassName := "language-translator"
+	cfInstanceIndex := os.Getenv("CF_INSTANCE_INDEX")
+	if cfInstanceIndex != "" {
+		serviceClassName = "language_translator"
+	}
 	vcapStr := os.Getenv("VCAP_SERVICES")
 	if vcapStr == "" {
 		vcapStr = jsonStr
 	}
+	log.Printf("----vcap_services string: %v\n", vcapStr)
+	log.Printf("----name: %v\n", name)
+	log.Printf("----serviceClassName: %v\n", serviceClassName)
 	var vcapServices map[string][]Service
 	err := json.Unmarshal([]byte(vcapStr), &vcapServices)
 	if err != nil {
 		return nil
 	}
-	for _, v := range vcapServices["language-translator"] {
+	for _, v := range vcapServices[serviceClassName] {
 		if v.Name == name {
 			return &v.Credentials
 		}
@@ -39,7 +47,7 @@ func GetCredentialFromVcapServicesByName(name string) *Credential {
 }
 
 func main() {
-	log.Print("Hello world sample started.")
+	log.Print("go4translator started.")
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -51,6 +59,8 @@ func main() {
 		name = "thetranslator"
 	}
 	credential := GetCredentialFromVcapServicesByName(name)
+	log.Printf("The credential is %v\n", credential)
+
 	apikey := credential.ApiKey
 	url := credential.URL
 	log.Printf("-----------apikey: %s, url: %s\n", apikey, url)
@@ -65,30 +75,14 @@ const jsonStr = `{
 	  {
 		"credentials": {
 		  "apikey": "xxx",
-		  "iam_apikey_description": "Auto-generated for key dca63618-4af0-416c-9508-03752e10e242",
-		  "iam_apikey_name": "thetranslator",
+		  "iam_apikey_description": "Auto-generated for key 07f29313-3c4d-4dea-a431-f6caae6b03d9",
+		  "iam_apikey_name": "ying-translator-binding",
 		  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-		  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/ef6a34810cbcd892507d3ebe01e3d95a::serviceid:ServiceId-5bfd5402-0655-4592-a25b-9012f0335d23",
-		  "url": "https://api.us-south.language-translator.watson.cloud.ibm.com/instances/c7a49da9-c44d-4dd4-a0f3-8714fb15f4c0"
+		  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/8d63fb1cc5e99e86dd7229dddffc05a5::serviceid:ServiceId-5c954360-76cd-47c7-ad04-660782f68947",
+		  "url": "https://api.us-south.language-translator.watson.cloud.ibm.com/instances/271b6ff6-4e0f-4673-a389-f7b7fbbe3afa"
 		},
 		"name": "thetranslator",
 		"plan": "standard"
-	  }
-	],
-	"cloud-object-storage": [
-	  {
-		"credentials": {
-		  "apikey": "xxx",
-		  "cos_hmac_keys": "{\"access_key_id\":\"xxx\",\"secret_access_key\":\"yyy\"}",
-		  "endpoints": "https://control.cloud-object-storage.cloud.ibm.com/v2/endpoints",
-		  "iam_apikey_description": "Auto-generated for key ff229a84-ac88-4290-8e66-568859cf84af",
-		  "iam_apikey_name": "thecos",
-		  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-		  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/ef6a34810cbcd892507d3ebe01e3d95a::serviceid:ServiceId-1cfcbb24-7bfe-407e-b001-4045188136a2",
-		  "resource_instance_id": "crn:v1:bluemix:public:cloud-object-storage:global:a/ef6a34810cbcd892507d3ebe01e3d95a:a1016433-81fe-47a0-a043-0396321e73e8::"
-		},
-		"name": "thecos",
-		"plan": "lite"
 	  }
 	]
   }`

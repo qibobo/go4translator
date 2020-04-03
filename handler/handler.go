@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/IBM/go-sdk-core/core"
@@ -39,7 +40,7 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	translateOptions := h.service.NewTranslateOptions(textToTranslate).
 		SetModelID(model)
-
+	log.Printf("-----translateOptions is : %v\n", translateOptions)
 	// Call the languageTranslator Translate method
 	translateResult, response, responseErr := h.service.Translate(translateOptions)
 
