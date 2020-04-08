@@ -5,7 +5,7 @@ cf delete -f go4translator
 cf ds -f mytl
 make build
 cf cs language_translator standard mytl
-cf push go4translator -b binary_buildpack -c './go4translator' --no-start
+cf push go4translator -b binary_buildpack -c './go4translator' --no-start --random-route
 # cf set-env go4translator TRANSLATOR_NAME mytl
 cf bs go4translator mytl
 cf start go4translator
