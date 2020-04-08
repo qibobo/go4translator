@@ -38,6 +38,9 @@ func GetCredentialFromVcapServicesByName(name string) *Credential {
 	if err != nil {
 		return nil
 	}
+	if name == "" && vcapServices[serviceClassName] != nil && len(vcapServices[serviceClassName]) > 0 {
+		return &(vcapServices[serviceClassName][0].Credentials)
+	}
 	for _, v := range vcapServices[serviceClassName] {
 		if v.Name == name {
 			return &v.Credentials
@@ -55,9 +58,9 @@ func main() {
 	}
 
 	name := os.Getenv("TRANSLATOR_NAME")
-	if name == "" {
-		name = "thetranslator"
-	}
+	// if name == "" {
+	// 	name = "thetranslator"
+	// }
 	credential := GetCredentialFromVcapServicesByName(name)
 	log.Printf("The credential is %v\n", credential)
 
