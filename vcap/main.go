@@ -20,31 +20,22 @@ type Service struct {
 	Credentials Credential `json:"credentials"`
 }
 
-func GetCredentialFromVcapServicesByName(name string) *Credential {
+func GetCredentialFromVcapServices() *Credential {
 	serviceClassName := "language-translator"
 	cfInstanceIndex := os.Getenv("CF_INSTANCE_INDEX")
 	if cfInstanceIndex != "" {
 		serviceClassName = "language_translator"
 	}
 	vcapStr := os.Getenv("VCAP_SERVICES")
-	if vcapStr == "" {
-		vcapStr = jsonStr
-	}
 	log.Printf("----vcap_services string: %v\n", vcapStr)
-	log.Printf("----name: %v\n", name)
 	log.Printf("----serviceClassName: %v\n", serviceClassName)
 	var vcapServices map[string][]Service
 	err := json.Unmarshal([]byte(vcapStr), &vcapServices)
 	if err != nil {
 		return nil
 	}
-	if name == "" && vcapServices[serviceClassName] != nil && len(vcapServices[serviceClassName]) > 0 {
+	if vcapServices[serviceClassName] != nil && len(vcapServices[serviceClassName]) > 0 {
 		return &(vcapServices[serviceClassName][0].Credentials)
-	}
-	for _, v := range vcapServices[serviceClassName] {
-		if v.Name == name {
-			return &v.Credentials
-		}
 	}
 	return nil
 }
@@ -57,35 +48,14 @@ func main() {
 		port = "8080"
 	}
 
-	name := os.Getenv("TRANSLATOR_NAME")
-	// if name == "" {
-	// 	name = "thetranslator"
-	// }
-	credential := GetCredentialFromVcapServicesByName(name)
+	credential := GetCredentialFromVcapServices()
 	log.Printf("The credential is %v\n", credential)
 
 	apikey := credential.ApiKey
 	url := credential.URL
-	log.Printf("-----------apikey: %s, url: %s\n", apikey, url)
+	log.Printf("----apikey: %s, url: %s\n", apikey, url)
 	handler := handler.NewHandler(apikey, url)
 	http.HandleFunc("/", handler.Handle)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
-
-const jsonStr = `{
-	"language-translator": [
-	  {
-		"credentials": {
-		  "apikey": "xxx",
-		  "iam_apikey_description": "Auto-generated for key 07f29313-3c4d-4dea-a431-f6caae6b03d9",
-		  "iam_apikey_name": "ying-translator-binding",
-		  "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-		  "iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/8d63fb1cc5e99e86dd7229dddffc05a5::serviceid:ServiceId-5c954360-76cd-47c7-ad04-660782f68947",
-		  "url": "https://api.us-south.language-translator.watson.cloud.ibm.com/instances/271b6ff6-4e0f-4673-a389-f7b7fbbe3afa"
-		},
-		"name": "thetranslator",
-		"plan": "standard"
-	  }
-	]
-  }`
