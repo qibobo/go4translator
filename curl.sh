@@ -1,0 +1,5 @@
+echo "We are good ==>> " 
+url="https://$(cf app go4translator | grep --color=no "routes:" | awk -F ':            ' '{print $2}')?model=en-zh&text=we%20are%20good"
+curl "$url"
+url="https://$(cf app go4translator | grep --color=no "routes:" | awk -F ':            ' '{print $2}')?model=en-de&text=we%20are%20good"
+curl "$url"
