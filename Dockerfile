@@ -10,7 +10,7 @@ WORKDIR /app
 COPY . ./
 
 # Build the binary.
-RUN CGO_ENABLED=0 GOOS=linux go build -o server /app/vcap/main.go 
+RUN CGO_ENABLED=0 GOOS=linux go build -o server /app/main.go 
 
 # Use the official Alpine image for a lean production container.
 # https://hub.docker.com/_/alpine

@@ -50,12 +50,13 @@ func main() {
 
 	credential := GetCredentialFromVcapServices()
 	log.Printf("The credential is %v\n", credential)
-
-	apikey := credential.ApiKey
-	url := credential.URL
-	log.Printf("----apikey: %s, url: %s\n", apikey, url)
-	handler := handler.NewHandler(apikey, url)
-	http.HandleFunc("/", handler.Handle)
+	if credential != nil {
+		apikey := credential.ApiKey
+		url := credential.URL
+		log.Printf("----apikey: %s, url: %s\n", apikey, url)
+		handler := handler.NewHandler(apikey, url)
+		http.HandleFunc("/", handler.Handle)
+	}
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
